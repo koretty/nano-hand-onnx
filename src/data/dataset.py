@@ -10,8 +10,8 @@ from data.preprocess import PreprocessFn
 class DatasetBundle:
     train_ds: tf.data.Dataset
     val_ds: tf.data.Dataset
-    train_steps: int
-    val_steps: int
+    train_epoch_steps: int
+    val_epoch_steps: int
 
 
 def _make_synthetic_split(
