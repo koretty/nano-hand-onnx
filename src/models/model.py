@@ -1,28 +1,16 @@
 from typing import Iterable
-
+from tensorflow.keras import layers, models
 import tensorflow as tf
 
 
-def build_model(
-    input_dim: int,
-    num_classes: int,
-    hidden_units: Iterable[int] = (64, 32),
-    dropout_rate: float = 0.1,
-) -> tf.keras.Model:
-    """Build a simple MLP model.
-
-    This is intentionally small so it can be replaced quickly.
-    """
-    inputs = tf.keras.Input(shape=(input_dim,), name="features")
-    x = inputs
-
-    for i, units in enumerate(hidden_units):
-        x = tf.keras.layers.Dense(units, activation="relu", name=f"dense_{i}")(x)
-        # TODO: Replace with LayerNorm/BatchNorm if your model needs it.
-        x = tf.keras.layers.Dropout(dropout_rate, name=f"dropout_{i}")(x)
-
-    outputs = tf.keras.layers.Dense(num_classes, activation="softmax", name="class_probs")(x)
-    model = tf.keras.Model(inputs=inputs, outputs=outputs, name="baseline_mlp")
-
-    # TODO: Support architecture registry (e.g., transformer/cnn/rnn) here.
+def build_model() -> tf.keras.Model:
+    model = models.Sequential([
+        layers.InputLayer(input_shape=(64, 64, 1)),
+        layers.Conv2D(16, (3, 3), strides=(2, 2), padding='same', activation='relu'),
+        layers.SeparableConv2D(32, (3, 3), strides=(2, 2), padding='same', activation='relu'),
+        layers.SeparableConv2D(64, (3, 3), strides=(2, 2), padding='same', activation='relu'),
+        layers.GlobalAveragePooling2D(),
+        layers.Dense(32, activation='relu'),
+        layers.Dense(4, activation='sigmoid')
+    ])
     return model
